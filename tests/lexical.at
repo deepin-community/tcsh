@@ -1,13 +1,18 @@
-# Lexical analysis and substitutions
+AT_BANNER([Lexical analysis and substitutions])
+
+dnl
+dnl	Word splitting
+dnl
 
 AT_SETUP([Word splitting])
+AT_KEYWORDS([lexical])
 
 AT_CHECK([tcsh -f -v -c '&|;<>()&||<<>>space tab	end'], 1, ,
 [& | ; < > ( ) & || << >> space tab end
 Invalid null command.
 ])
 
-# Note that the tab becomes a space!
+dnl Note that the tab becomes a space!
 AT_DATA([oneword.csh],
 [[set var=('&|;<>()&||<<>>space tab	end')
 echo $var[1]
@@ -16,7 +21,7 @@ AT_CHECK([tcsh -f oneword.csh], ,
 [&|;<>()&||<<>>space tab end
 ])
 
-# Note that the tab becomes a space!
+dnl Note that the tab becomes a space!
 AT_DATA([oneword.csh],
 [[set var=("&|;<>()&||<<>>space tab	end")
 echo $var[1]
@@ -25,18 +30,36 @@ AT_CHECK([tcsh -f oneword.csh], ,
 [&|;<>()&||<<>>space tab end
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	Comments
+dnl
+dnl Note that '#' is not a comment if stdin is a terminal.
+dnl
 
 AT_SETUP([Comments])
-
-AT_CHECK([if [ ! -t 0 ]; then exit 77; fi],, [Skipping comment tests])
+AT_KEYWORDS([lexical])
 
 AT_CHECK([echo 'echo OK@%:@comment' | tcsh -f], , [OK
 ])
 
-AT_CHECK([tcsh -f -c 'echo @%:@no comment'], ,
+dnl Different behavior if stdin is a terminal or not.
+AT_CHECK([tcsh -f -c 'echo @%:@no comment'], , [stdout])
+AS_IF([test -t 0], [dnl
+AT_CHECK([cat stdout], ,
 [@%:@no comment
+])
+], [dnl
+AT_CHECK([cat stdout], ,
+[
+])
+])
+
+dnl Explicitly disable stdin as terminal
+AT_CHECK([tcsh -f -c 'echo @%:@no comment' < /dev/null], ,
+[
 ])
 
 AT_DATA([comment2.csh],
@@ -47,10 +70,15 @@ AT_CHECK([tcsh -f comment2.csh], ,
 [testing... OK
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	Escaping special characters
+dnl
 
 AT_SETUP([Escaping special characters])
+AT_KEYWORDS([lexical])
 
 AT_DATA([nosplit.csh],
 [[echo \&\|\;\<\>\(\)\&\|\|\<\<\>\>\space\ tab\	end
@@ -69,7 +97,7 @@ AT_CHECK([tcsh -f nosplit.csh], 1,
 Invalid null command.
 ])
 
-# backslash handling tested with $backslash_quote
+dnl backslash handling tested with $backslash_quote
 
 AT_CHECK([tcsh -f -c 'echo "foo\"bar"'], 1, , [Unmatched '"'.
 ])
@@ -78,10 +106,15 @@ dnl " Pacify emacs
 AT_CHECK([tcsh -f -c "echo 'foo\'bar'"], 1, , [Unmatched '''.
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	Preventing substitution
+dnl
 
 AT_SETUP([Preventing substitution])
+AT_KEYWORDS([lexical])
 
 AT_CHECK([tcsh -f -c 'echo \$OK'], , [$OK
 ])
@@ -149,17 +182,23 @@ AT_CHECK([tcsh -f noalias.csh])
 AT_CHECK([tcsh -f -c 'echo "g?*b"'], , [g?*b
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	History basics
+dnl
 
 AT_SETUP([History basics])
+AT_KEYWORDS([lexical])
 
-# Printing prompt only when at end of input is rather nondeterministic...
+dnl Printing prompt only when at end of input is rather nondeterministic...
 AT_DATA([basic.csh],
 [[echo 1
 echo 2
 !1
 ]])
+
 AT_CHECK([tcsh -f -q -i < basic.csh], ,
 [> 1
 2
@@ -176,6 +215,7 @@ history | cut -d '	' -f 1,3-
 set histlit
 history | cut -d '	' -f 1,3-
 ]])
+
 AT_CHECK([tcsh -f -q -i < histlit.csh], ,
 [> foo
 foo
@@ -195,14 +235,20 @@ foo
 AT_DATA([nohist.csh],
 [echo ! space !	tab != "!(" newline !
 ])
+
 AT_CHECK([tcsh -f nohist.csh], ,
 [[! space ! tab != !( newline !
 ]])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	Event specification
+dnl
 
 AT_SETUP([Event specification])
+AT_KEYWORDS([lexical])
 
 AT_DATA([positive.csh],
 [[echo 1
@@ -341,10 +387,15 @@ numberx
 echo numberx
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	Word selection
+dnl
 
 AT_SETUP([Word selection])
+AT_KEYWORDS([lexical])
 
 AT_DATA([words.csh],
 [[echo 1 2 3 4 5
@@ -390,15 +441,24 @@ echo 2 3 4
 echo 1 2 3 4 5
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	History modifiers
+dnl
 
 AT_SETUP([History modifiers])
+AT_KEYWORDS([lexical])
 
 AT_DATA([modifiers.csh],
 [[echo foo bar baz quux /usr/src/sys/sys/malloc.c
 ^baz^bash
 ^bar^kPa^:p
+echo !1:1:h
+echo !1:1:t
+echo !1:1:r
+echo !1:1:e
 echo !1:$:h
 echo !1:$:t
 echo !1:$:r
@@ -424,6 +484,10 @@ echo ${#var}
 AT_CHECK([tcsh -f -q -i < modifiers.csh], ,
 [[> foo bar baz quux /usr/src/sys/sys/malloc.c
 foo bar bash quux /usr/src/sys/sys/malloc.c
+foo
+foo
+foo
+
 /usr/src/sys/sys
 malloc.c
 /usr/src/sys/sys/malloc
@@ -445,6 +509,10 @@ f[oo][oo] bar baz quux /usr/src/sys/sys/mall[oo]c.c
 ]],
 [[echo foo bar bash quux /usr/src/sys/sys/malloc.c
 echo foo kPa bash quux /usr/src/sys/sys/malloc.c
+echo foo
+echo foo
+echo foo
+echo
 echo /usr/src/sys/sys
 echo malloc.c
 echo /usr/src/sys/sys/malloc
@@ -465,10 +533,15 @@ set var= ( foo b r b z quux )
 set var= ( foo b r b z quux )
 ]])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	Alias substitution
+dnl
 
 AT_SETUP([Alias substitution])
+AT_KEYWORDS([lexical])
 
 AT_DATA([alias.csh],
 [[alias simple 'echo OK'
@@ -493,10 +566,15 @@ no bug
 [Alias loop.
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	Variable substitution
+dnl
 
 AT_SETUP([Variable substitution])
+AT_KEYWORDS([lexical])
 
 AT_DATA([var.csh],
 [[set v=foo
@@ -526,6 +604,7 @@ echo $?
 # untested: $$, $!, $_
 echo $<:q
 ]])
+
 AT_CHECK([echo '`"{}$@'"'" | env_var=ENV_VAL tcsh -f var.csh arg1 arg2], ,
 [foo foo $v $v \foo \$v $ space $ tab $
 zzzabc zzz* zzz*
@@ -545,10 +624,15 @@ arg1 arg2
 `"{}$@'
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	Quoting of expansions in `...`
+dnl
 
 AT_SETUP([Quoting of expansions in `...`])
+AT_KEYWORDS([lexical])
 
 AT_DATA([batchsystem.properties],
 [[# Path to job setting file
@@ -565,6 +649,7 @@ dbpasswd=stbns01bt
 # OnBatch listener
 run=3
 ]])
+
 AT_DATA([uniformity_test.csh],
 [[
 set SERVICE_NAME_LOG = `cat batchsystem.properties | grep '^jdbc_url' | sed -ne 's/^[^=]*=[^@]*@[[:blank:]]*\([^$]*\)$/\1/p' | perl -pe 's/\s//g'  |  perl -pe 's/\)/\\\)/g' | perl -pe 's/\(/\\\(/g'`
@@ -572,7 +657,7 @@ echo -n "$SERVICE_NAME_LOG" > ./output1
 
 cat batchsystem.properties | grep '^jdbc_url' | sed -ne 's/^[^=]*=[^@]*@[[:blank:]]*\([^$]*\)$/\1/p' | perl -pe 's/\s//g'  |  perl -pe 's/\)/\\\)/g' | perl -pe 's/\(/\\\(/g' > ./output2
 
-diff -uprN ./output1 ./output2 >& /dev/null
+diff -ur ./output1 ./output2 >& /dev/null
 
 if ( $? != 0 ) then
   echo -n 'FAIL: tcsh does not have uniform output when `...` is used!'
@@ -591,7 +676,7 @@ set SERVICE_NAME_LOG  = `echo "$string" | grep '^jdbc_url' | sed -ne 's/^[^=]*=[
 
 echo "$SERVICE_NAME_LOG" > ./actual_result
 
-diff -uprN ./expected_result ./actual_result >& /dev/null
+diff -ur ./expected_result ./actual_result >& /dev/null
 
 if ( $? != 0 ) then
   echo -n 'FAIL: tcsh has unexpected result when `...` is used!'
@@ -604,9 +689,15 @@ endif
 AT_CHECK([tcsh -f uniformity_test.csh], 0,[OK])
 AT_CHECK([tcsh -f quoting_result_test.csh], 0, [OK])
 
-AT_CLEANUP
+AT_CLEANUP()
+
+
+dnl
+dnl	\echo for git_tcsh_completion
+dnl
 
 AT_SETUP([\echo for git_tcsh_completion])
+AT_KEYWORDS([lexical])
 
 AT_DATA([escape_echo.csh],
 [[
@@ -625,4 +716,152 @@ AT_CHECK([tcsh -f escape_echo.csh], 0,
 3
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
+
+
+dnl
+dnl	:gas work as described in the man pages
+dnl
+
+AT_SETUP([:gas work as described in the man pages])
+AT_KEYWORDS([lexical])
+
+AT_DATA([gas.csh],
+[[set x=(aa bb aa bb)
+echo $x:gas/a/c/:gs/b/d/
+foreach i ( "$x:gas/a/c/:q" )
+    echo $i
+end
+echo $x:gas/a/q/:gs/b/w/:s/b/e/
+echo $x:gas/a/q/:gs/b/w/:s/b/e/:gas/q/Q/
+exit 0
+]])
+
+AT_CHECK([tcsh -f gas.csh], 0,
+[cc db cc db
+cc bb cc bb
+qq we qq wb
+QQ we QQ wb
+])
+
+AT_CLEANUP()
+
+
+dnl
+dnl	Avoid infinite loop in :gas
+dnl
+
+AT_SETUP([Avoid infinite loop in :gas])
+AT_KEYWORDS([lexical])
+
+AT_DATA([replace_all.csh],
+[[set x=aa
+echo $x:gas/a/ba/
+exit 0
+]])
+
+AT_CHECK([tcsh -f replace_all.csh], 0,
+[baba
+])
+
+AT_CLEANUP()
+
+
+dnl
+dnl	/a.b/c:r doesn't remove path elements
+dnl
+
+AT_SETUP([/a.b/c:r doesn't remove path elements])
+AT_KEYWORDS([lexical])
+
+AT_DATA([colon_r_no_extension.csh],
+[[set x='/a.b/c'
+echo $x:r
+exit 0
+]])
+
+AT_CHECK([tcsh -f colon_r_no_extension.csh], 0,
+[/a.b/c
+])
+
+AT_CLEANUP()
+
+
+dnl
+dnl	$x:q:h yields the full string
+dnl
+
+AT_SETUP([$x:q:h yields the full string])
+AT_KEYWORDS([lexical])
+
+AT_DATA([x_colon_q_colon_h.csh],
+[[set x='a/b c/d.e'
+echo $x:q:h
+exit 0
+]])
+
+AT_CHECK([tcsh -f x_colon_q_colon_h.csh], 0,
+[a/b c/d.e
+])
+
+AT_CLEANUP()
+
+
+dnl
+dnl	$x:q:t yields the full string
+dnl
+
+AT_SETUP([$x:q:t yields the full string])
+AT_KEYWORDS([lexical])
+
+AT_DATA([x_colon_q_colon_h.csh],
+[[set x='a/b c/d.e'
+echo $x:q:t
+exit 0
+]])
+
+AT_CHECK([tcsh -f x_colon_q_colon_h.csh], 0,
+[a/b c/d.e
+])
+
+AT_CLEANUP()
+
+
+dnl
+dnl	$x:q:r yields the full string
+dnl
+
+AT_SETUP([$x:q:r yields the full string])
+AT_KEYWORDS([lexical])
+
+AT_DATA([x_colon_q_colon_r.csh],
+[[set x='a/b c/d.e'
+echo $x:q:r
+exit 0
+]])
+
+AT_CHECK([tcsh -f x_colon_q_colon_r.csh], 0,
+[a/b c/d.e
+])
+
+AT_CLEANUP()
+
+
+dnl
+dnl	$x:q:e yields nothing
+dnl
+
+AT_SETUP([$x:q:e yields nothing])
+AT_KEYWORDS([lexical])
+
+AT_DATA([x_colon_q_colon_e.csh],
+[[set x='a/b c/d.e'
+echo $x:q:e
+exit 0
+]])
+
+AT_CHECK([tcsh -f x_colon_q_colon_e.csh], 0,
+[
+])
+
+AT_CLEANUP()

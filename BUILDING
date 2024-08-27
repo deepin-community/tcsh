@@ -24,12 +24,21 @@ To install tcsh:
     Run "./configure --help" to see possible options.  After running
     configure, goto step 5.
 
-    a)	On Debian you'll want to have development libraries installed.
-	Try the following:
+    You'll want to have development libraries installed:
+
+    a)	On Debian, try the following:
+
 	apt-get install \
 	build-essential \
-	libncurses5-dev \
-	libncursesw5-dev \
+	libncurses-dev \
+	;
+
+    b)	On Fedora, try the following:
+
+	dnf group install \
+	"C Development Tools and Libraries" \
+	"Development Libraries" \
+	"Development Tools" \
 	;
 
 2)  If you have imake running on your machine, you may try building with
@@ -78,10 +87,7 @@ To install tcsh:
 8)  make
 
 9)  Read the documentation while you are waiting.  The file tcsh.man
-    is in standard [nt]roff -man format. If you like, you can run the
-    tcsh.man2html script (requires Perl) to generate an HTML version
-    of the manpage which you can read with Mosaic, lynx or other HTML
-    browser.
+    is in standard [nt]roff -mdoc format.
 
 10) Test tcsh by typing ./tcsh to see that it has compiled correctly.
     The history command should give a time stamp on every entry.
@@ -104,7 +110,8 @@ To install tcsh:
 11) Once satisfied that tcsh is working correctly, complete the
     installation by typing "make install" to install the binary, and
     "make install.man" to install the documentation. Don't forget to
-    look at complete.tcsh for useful completions...
+    look at complete.tcsh for useful completions, dot.login for a sample
+    ~/.login file, and dot.tcshrc for a sample ~/.tcshrc file...
 
 12) Enjoy.
 

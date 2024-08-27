@@ -1,3 +1,163 @@
+tcsh (6.24.13-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Josef Schneider <josef81sch@gmail.com>  Wed, 24 Jul 2024 15:59:26 +0200
+
+tcsh (6.24.13-1) experimental; urgency=medium
+
+  * New upstream version.
+  * debian/patches: Remove patches fixed in upstream.
+    + fix-greek-locale-code.patch
+    + gethost-crossbuild-flags.patch
+  * debian/patches/fix-acute-accent-in-manpage.patch: Forwarded upstream.
+  * debian/tcsh.lintian-overrides: Update line numbers.
+  * debian/menu:
+    + Change /bin to /usr/bin.
+    + Part of /usr-move transition (Closes: #1073611).
+  * debian/shells.d/tcsh: Change /bin to /usr/bin.
+  * debian/postrm:
+    + Change /bin to /usr/bin.
+    + Remove /bin/tcsh symlink if it exists.
+  * debian/control: Apply wrap-and-sort.
+  * debian/tests/run-testsuite: Remove --bindir.
+  * debian/rules: Remove unnecessary override_dh_auto_build target.
+  * debian/postinst: Reverse tcsh symlink.
+
+ -- Josef Schneider <josef81sch@gmail.com>  Sat, 29 Jun 2024 13:29:11 +0200
+
+tcsh (6.24.12-1) unstable; urgency=medium
+
+  * New upstream versions 6.24.11 and 6.24.12.
+  * debian/patches: Remove patches fixed in upstream.
+    + priority-values-nice-test.patch
+    + exit-kill-status-test.patch
+    + use-LC_ALL-with-sort.patch
+  * debian/patches: Refresh disable-test-notty.patch.
+  * debian/patches: Remove add-cppflag.patch, already hardening in rules.
+  * debian/patches: Add gethost-crossbuild-flags.patch.
+    + Fixes arm64 crossbuild failure by passing correct build flags to gethost.
+  * debian/tcsh.lintian-overrides: Update line numbers.
+  * debian/copyright: Add dotlock.* files and BSD-2-clause license.
+  * debian/control:
+    + Add dpkg-dev as build-dep for *_FOR_BUILD flags.
+    + Bump Standards-Version to 4.7.0.
+  * debian/rules: Override blhc for missing gethost hardening flags.
+
+ -- Josef Schneider <josef81sch@gmail.com>  Thu, 18 Apr 2024 17:41:25 +0200
+
+tcsh (6.24.10-4) unstable; urgency=medium
+
+  * debian/patches:
+    + Add priority-values-nice-test.patch.
+      - Fixes reproducible-builds issue.
+      - Fixes issue in multiple archs, including loong64 (Closes: #1059508).
+      - Tests permissions for nice priority values.
+    + Add exit-kill-status-test.patch.
+      - Fixes builds using qemu environment.
+    + Add use-LC_ALL-with-sort.patch.
+      - Fixes reprotest failure.
+  * debian/copyright: Add 2024 to debian copyright year.
+
+ -- Josef Schneider <josef81sch@gmail.com>  Mon, 12 Feb 2024 17:15:03 +0100
+
+tcsh (6.24.10-3) unstable; urgency=medium
+
+  * debian/rules:
+    + Remove unnecessary copy config.* command (Closes: #1045622).
+    + Remove extra make clean command.
+
+ -- Josef Schneider <josef81sch@gmail.com>  Mon, 14 Aug 2023 14:55:23 +0200
+
+tcsh (6.24.10-2) unstable; urgency=medium
+
+  * d/copyright: Update source to github link.
+  * d/tests:
+    + Add autopkgtest for tcsh.
+    + Create run-testsuite sh script to generate and run testsuite from build
+      process on the installed package.
+
+ -- Josef Schneider <josef81sch@gmail.com>  Wed, 12 Jul 2023 20:44:29 +0200
+
+tcsh (6.24.10-1) unstable; urgency=medium
+
+  * New upstream version.
+  * d/patches:
+    + Remove disable-test-nice.patch (test passes during build).
+    + Update disable-test-cdtohome.patch (surrounding changes).
+    + Refresh other patches.
+  * d/tcsh.lintian-overrides: Update line numbers for overrides.
+  * d/dirs: Remove to eliminate lintian warning.
+  * d/shells.d: Add shells.d/tcsh file.
+  * d/tcsh.install: Install d/shells.d/tcsh to /usr/share/debianutils/shells.d.
+  * d/postrm:
+    + Switch {add,remove}-shell to update-shells.
+    + Allow for downgrades.
+
+ -- Josef Schneider <josef81sch@gmail.com>  Fri, 16 Jun 2023 14:18:30 +0200
+
+tcsh (6.24.07-1) unstable; urgency=medium
+
+  * New maintainer (Closes: #1019858).
+  * New upstream version.
+  * d/control:
+    + Bump Standards-Version to 4.6.2.
+    + Upgrade to debhelper-compat version 13.
+    + Add Rules-Requires-Root line.
+  * d/compat: Remove for dh 13.
+  * d/copyright: Add debian folder copyright info.
+  * d/patches:
+    + Update and refresh existing patches.
+    + Remove 0001-PR*.patch, 0001-bash*.patch, 01_build.2.patch,
+      disable-test-home.patch (not needed).
+    + Add add-cppflag.patch to fix blhc failure.
+    + Add fix-greek-locale-code.patch to fix lintian locale warning.
+    + Add fix-acute-accent-in-manpage.patch to fix lintian warning.
+  * d/postinst:
+    + Remove update-menus calls.
+    + Change which to command -v.
+  * d/postrm:
+    + Remove update-menus calls.
+    + Change which to command -v.
+  * d/preinst: Remove.
+  * d/README.Debian: Update information.
+  * d/README.source: Remove.
+  * d/rules: Add hardening flags.
+  * d/tcsh.lintian-overrides: Override false positive warnings.
+  * d/upstream/metadata: New file.
+  * d/watch: Upgrade to version 4, switch to github link.
+
+ -- Josef Schneider <josef81sch@gmail.com>  Fri, 20 Jan 2023 14:41:31 +0100
+
+tcsh (6.21.00-4) unstable; urgency=medium
+
+  * QA upload.
+  * d/copyright: Convert to machine-readable format.
+
+  [ Debian Janitor ]
+  * Trim trailing whitespace.
+  * Bump debhelper from deprecated 9 to 10.
+  * Fix day-of-week for changelog entry 6.06-4.
+  * Update standards version to 4.5.0, no changes needed.
+
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Wed, 14 Dec 2022 02:46:34 +0000
+
+tcsh (6.21.00-3) unstable; urgency=medium
+
+  * QA upload.
+  * Convert to 3.0 source format. (Closes: #1007077)
+
+ -- Bastian Germann <bage@debian.org>  Sat, 03 Dec 2022 12:22:56 +0100
+
+tcsh (6.21.00-2) unstable; urgency=medium
+
+  * QA upload.
+  * Set Maintainer to Debian QA Group. (see #1019858)
+  * Add upstream fix for FTBFS with bash 5.2. (Closes: #1020064)
+  * Add upstream fix for range comparison bug. (Closes: #999754)
+
+ -- Adrian Bunk <bunk@debian.org>  Sat, 19 Nov 2022 23:13:18 +0200
+
 tcsh (6.21.00-1.1) unstable; urgency=medium
 
   * Non-maintainer upload.
@@ -872,7 +1032,7 @@ tcsh (6.06-4) stable; urgency=high
 
   * Taken over package from Andrew Howell.
 
- -- Vadik Vygonets <vadik@debian.org>  Wed, 10 Oct 1996 02:28:10 +0200
+ -- Vadik Vygonets <vadik@debian.org>  Thu, 10 Oct 1996 02:28:10 +0200
 
 tcsh (6.06-3);
 
@@ -897,5 +1057,3 @@ tcsh (6.06-1);
 tcsh (6.05-4);
   * added Debian GNU/Linux package maintenance system files
   * applied patches to fix resolver lookup hangs (from Bruce Perens)
-
-

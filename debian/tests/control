@@ -1,0 +1,2 @@
+Tests: run-testsuite
+Depends: tcsh, autoconf, libncurses-dev, build-essential

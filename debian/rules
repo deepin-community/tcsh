@@ -3,20 +3,17 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 -include /usr/share/dpkg/buildflags.mk
 export CPPFLAGS CFLAGS LDFLAGS
 
 CFLAGS += -D_FILE_OFFSET_BITS=64
 
 %:
-	dh $@ --with quilt
-
-override_dh_auto_configure:
-	cp /usr/share/misc/config.sub .
-	cp /usr/share/misc/config.guess .
-	dh_auto_configure -- --bindir=/bin
+	dh $@
 
 override_dh_auto_build:
+	@echo "blhc: ignore-line-regexp: ^(cc|gcc) -.*gethost.*"
 	$(MAKE)
 	$(MAKE) catalogs
 
@@ -36,8 +33,6 @@ override_dh_auto_test:
 endif
 
 override_dh_auto_clean:
-	[ ! -f nls/Makefile ] || make -C nls clean
 	dh_auto_clean
 	rm -f atconfig
 	rm -rf tests/package.m4 tests/testsuite testsuite.dir testsuite.log
-

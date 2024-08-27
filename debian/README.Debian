@@ -11,9 +11,6 @@ useful when you have a network with various Unix boxen and users which
 use /usr/local/bin/tcsh as their shells.
 
 There are two tcsh related mailing lists, visit
-http://www.tcsh.org/MailingLists if you want to subscribe.
-
-The tcsh bug tracker is available at
-http://bugs.gw.com/
+https://mailman.astron.com/mailman/listinfo/tcsh if you want to subscribe.
 
  -- Thomas Lange <lange@debian.org>, Thu, 21 Jul 2011 22:36:15 +0200

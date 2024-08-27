@@ -1,6 +1,12 @@
-# Parenthesis handling
+AT_BANNER([Parenthesis handling])
+
+
+dnl
+dnl	Parenthesis no space
+dnl
 
 AT_SETUP([Parenthesis no space])
+
 AT_DATA([no-space.csh],
 [[
 if(1 == 1) then
@@ -12,12 +18,19 @@ else
   echo 3
 endif
 ]])
+
 AT_CHECK([tcsh -f < no-space.csh], ,[1
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
+
+
+dnl
+dnl	Parenthesis space
+dnl
 
 AT_SETUP([Parenthesis space])
+
 AT_DATA([space.csh],
 [[
 if (1 == 1) then
@@ -29,12 +42,19 @@ else
   echo 3
 endif
 ]])
+
 AT_CHECK([tcsh -f < space.csh], ,[1
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
+
+
+dnl
+dnl	Parenthesis space escaped
+dnl
 
 AT_SETUP([Parenthesis space escaped])
+
 AT_DATA([space-escaped.csh],
 [[
 if (1 == 1) then
@@ -46,18 +66,27 @@ else
   echo 3
 endif
 ]])
+
 AT_CHECK([tcsh -f < space-escaped.csh], ,[1
 ])
-AT_CLEANUP
+
+AT_CLEANUP()
+
+
+dnl
+dnl	Parenthesis escaped
+dnl
 
 AT_SETUP([Parenthesis escaped])
+
 AT_DATA([parenthesis-escaped.csh],
 [[
 if ( ')' == \) ) then
   echo 1
 endif
 ]])
+
 AT_CHECK([tcsh -f < parenthesis-escaped.csh], ,[1
 ])
-AT_CLEANUP
 
+AT_CLEANUP()

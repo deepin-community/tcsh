@@ -1,17 +1,18 @@
 Source: tcsh
 Section: shells
 Priority: optional
-Maintainer: Thomas Lange <lange@debian.org>
-Build-Depends: autotools-dev, libncurses5-dev, quilt, debhelper, autoconf
+Maintainer: Josef Schneider <josef81sch@gmail.com>
+Build-Depends: debhelper-compat (= 13), dpkg-dev (>= 1.22.1), libncurses-dev
 Vcs-Browser: https://salsa.debian.org/debian/tcsh
 Vcs-Git: https://salsa.debian.org/debian/tcsh.git
-Standards-Version: 4.4.0
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
 Homepage: https://www.tcsh.org/
 
 Package: tcsh
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Provides: c-shell
 Description: TENEX C Shell, an enhanced version of Berkeley csh
  The TENEX C Shell is an enhanced version of the Berkeley Unix C shell.
