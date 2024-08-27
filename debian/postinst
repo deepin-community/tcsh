@@ -19,20 +19,13 @@ set -e
 
 case "$1" in
     configure)
-	if [ ! -e /usr/bin/tcsh ]; then
-	    ln -s /bin/tcsh /usr/bin/tcsh
+	if [ ! -e /bin/tcsh ]; then
+	    ln -s /usr/bin/tcsh /bin/tcsh
 	fi
         update-alternatives \
                 --install /bin/csh csh /bin/tcsh 20 \
                 --slave /usr/share/man/man1/csh.1.gz csh.1.gz /usr/share/man/man1/tcsh.1.gz
 
-        if which add-shell >/dev/null; then
-            add-shell /bin/tcsh /usr/bin/tcsh
-        fi
-
-        if which update-menus; then
-            update-menus
-        fi
 	;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

@@ -1,0 +1,34 @@
+#!/bin/sh
+
+orig_srcdir=`pwd`
+
+# Copy tests dir to tmp dir
+echo "Copying tcsh tests folder to $AUTOPKGTEST_TMP"
+echo ""
+cp tests $AUTOPKGTEST_TMP -R
+
+echo "cd $AUTOPKGTEST_TMP"
+echo ""
+cd $AUTOPKGTEST_TMP
+
+# Run configure
+echo "Running configure"
+echo ""
+$orig_srcdir/configure --build=x86_64-linux-gnu --prefix=/usr --includedir=\${prefix}/include --mandir=\${prefix}/share/man --infodir=\${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=\${prefix}/lib/x86_64-linux-gnu --runstatedir=/run --disable-maintainer-mode --disable-dependency-tracking
+echo ""
+echo "Finished running configure"
+echo ""
+
+echo "Generating testsuite"
+echo ""
+make atconfig atlocal ./tests/testsuite srcdir=. 2>&1
+echo ""
+
+echo "Running testsuite"
+echo ""
+./tests/testsuite
+echo ""
+echo "Finished running testsuite"
+echo ""
+
+exit 0

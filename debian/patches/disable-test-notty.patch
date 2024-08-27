@@ -3,7 +3,7 @@ Description: Those tests fail when running the testsuite without a tty. Disablin
 
 --- a/tests/commands.at
 +++ b/tests/commands.at
-@@ -1205,11 +1205,6 @@
+@@ -1453,11 +1453,6 @@
  AT_DATA([script.csh],
  [[set var=$1
  ]])
@@ -15,16 +15,3 @@ Description: Those tests fail when running the testsuite without a tty. Disablin
  
  AT_CHECK([tcsh -f -c 'source -h script.csh foo; echo $var'], 1, [],
  [var: Undefined variable.
---- a/tests/variables.at
-+++ b/tests/variables.at
-@@ -343,10 +343,6 @@
- 
- AT_CHECK([if [ ! -t 0 ]; then exit 77; fi],, [Skipping $edit tests])
- 
--AT_CHECK([TERM=something tcsh -f -c 'echo $?edit'], ,
--[1
--])
--
- AT_CHECK([TERM=dumb tcsh -f -c 'echo $?edit'], ,
- [0
- ])

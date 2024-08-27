@@ -1,23 +1,37 @@
-# Individual built-in commands
+AT_BANNER([Individual built-in commands])
+
+dnl
+dnl	%
+dnl
 
 TCSH_UNTESTED([%])
 
 
+dnl
+dnl	:
+dnl
+
 AT_SETUP([:])
+AT_KEYWORDS([commands])
 
 AT_CHECK([tcsh -f -c ': foo'])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	@
+dnl
 
 AT_SETUP([@])
+AT_KEYWORDS([commands])
 
-# Not testing much...
+dnl Not testing much...
 AT_CHECK([tcsh -f -c 'set' > out1 && tcsh -f -c '@' > out2])
-AT_CHECK([diff out1 out2 | tail -n +2], ,
-[< command	set
----
-> command	@
+AT_CHECK([diff -U0 out1 out2 | tail -n +3], [], [dnl
+@@ -5 +5 @@
+-command	set
++command	@
 ])
 
 AT_CHECK([tcsh -f -c '@ var=2 * 3; echo $var'], ,
@@ -39,10 +53,15 @@ AT_CHECK([[tcsh -f -c \
 0 1
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	alias
+dnl
 
 AT_SETUP([alias])
+AT_KEYWORDS([commands])
 
 AT_CHECK([tcsh -f -c 'alias'])
 
@@ -64,7 +83,7 @@ AT_CHECK([tcsh -f -c 'alias unalias unalias'], 1, [],
 [unalias: Too dangerous to alias that.
 ])
 
-# Alias expansion happens only on the next input line
+dnl Alias expansion happens only on the next input line
 AT_DATA([alias.csh],
 [[alias foo echo bar; foo
 foo
@@ -74,18 +93,45 @@ AT_CHECK([tcsh -f alias.csh 2>&1], ,
 bar
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	alloc
+dnl
 
 TCSH_UNTESTED([alloc])
-TCSH_UNTESTED([bg])
-TCSH_UNTESTED([bindkey])
-#TCSH_UNTESTED([bs2cmd])
 
+
+dnl
+dnl	bg
+dnl
+
+TCSH_UNTESTED([bg])
+
+
+dnl
+dnl	bindkey
+dnl
+
+TCSH_UNTESTED([bindkey])
+
+
+dnl
+dnl	bs2cmd
+dnl
+
+
+TCSH_UNTESTED([bs2cmd])
+
+dnl
+dnl	break
+dnl
 
 AT_SETUP([break])
+AT_KEYWORDS([commands])
 
-# Evaluating the rest of the line is incredibly ugly
+dnl Evaluating the rest of the line is incredibly ugly
 AT_DATA([break.csh],
 [[while (1)
   echo foo
@@ -111,7 +157,7 @@ Bar
 foo
 ])
 
-# Ugly tends to imply buggy
+dnl Ugly tends to imply buggy
 AT_DATA([break2.csh],
 [[while (1)
     break; cat << EOF
@@ -127,14 +173,29 @@ AT_CHECK([tcsh -f break2.csh], ,
 Line 2
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	builtins
+dnl
 
 TCSH_UNTESTED([builtins])
+
+
+dnl
+dnl	bye
+dnl
+
 TCSH_UNTESTED([bye])
 
 
+dnl
+dnl	cd
+dnl
+
 AT_SETUP([cd])
+AT_KEYWORDS([commands])
 
 AT_DATA([cd.csh],
 [[set current=`/bin/pwd`
@@ -200,12 +261,17 @@ AT_CHECK([tcsh -f chdir.csh], , [expout],
 Usage: chdir [-plvn][-|<dir>].
 ]])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	complete
+dnl
 
 AT_SETUP([complete])
+AT_KEYWORDS([commands])
 
-# We check only that the strings are preserved
+dnl We check only that the strings are preserved
 AT_DATA([complete.csh],
 [[complete
 complete foo 'n/A/t:*/_' 'n/[^A]/t:*/_'
@@ -217,12 +283,17 @@ AT_CHECK([tcsh -f complete.csh], ,
 'n/A/t:*/_' 'n/[^A]/t:*/_'
 ]])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	continue
+dnl
 
 AT_SETUP([continue])
+AT_KEYWORDS([commands])
 
-# See comments in tests of 'break'
+dnl See comments in tests of 'break'
 AT_DATA([continue.csh],
 [[foreach var (1)
   echo foo
@@ -263,10 +334,15 @@ AT_CHECK([tcsh -f continue2.csh], ,
 Line 2
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	dirs
+dnl
 
 AT_SETUP([dirs])
+AT_KEYWORDS([commands])
 
 AT_DATA([dirs.csh],
 [[set current=`/bin/pwd`
@@ -331,56 +407,88 @@ AT_CHECK([echo x"`/bin/pwd`"x > /tmp/x && sed "s,`/bin/pwd`,CWD,g" < saved], ,
 pushd CWD/a
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
+dnl
+dnl	echo
+dnl
 
 AT_SETUP([echo])
+AT_KEYWORDS([commands])
 
-# Other functionality tested with $echo_style
+dnl Other functionality tested with $echo_style
 AT_CHECK([tcsh -f -c 'echo OK'], ,
 [OK
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	echotc
+dnl
 
 TCSH_UNTESTED([echotc])
 
 
+dnl
+dnl	eval
+dnl
+
 AT_SETUP([eval])
+AT_KEYWORDS([commands])
 
 AT_CHECK([tcsh -f -c 'set cmd="echo OK"; eval $cmd'], ,
 [OK
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	exec
+dnl
 
 AT_SETUP([exec])
+AT_KEYWORDS([commands])
 
 AT_CHECK([tcsh -f -c 'exec echo OK'], ,
 [OK
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	exit
+dnl
 
 AT_SETUP([exit])
+AT_KEYWORDS([commands])
 
 AT_CHECK([tcsh -f -c 'exit (50 * 4)'], 200)
 
 AT_CHECK([tcsh -f -c '(exit 50); exit'], 0)
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	fg
+dnl
 
 TCSH_UNTESTED([fg])
 
 
-AT_SETUP([filetest])
+dnl
+dnl	filetest
+dnl
 
-touch file1 file2
+AT_SETUP([filetest])
+AT_KEYWORDS([commands])
+
+touch file1 file2 'b{c'
 chmod 6777 file1
 chmod 000 file2
 
@@ -415,6 +523,10 @@ AT_CHECK([tcsh -f -c 'filetest -z file1 nonempty'], ,
 
 AT_CHECK([tcsh -f -c 'filetest -s file1 nonempty'], ,
 [0 1
+])
+
+AT_CHECK([tcsh -f -c 'filetest -f "b{c"'], ,
+[1
 ])
 
 mkdir dir
@@ -465,7 +577,9 @@ AT_CHECK([tcsh -f -c 'filetest -rwx file1'], ,
 [1
 ])
 
-# -A, -A:, -M, -M:, -C, -C:, -D, -I, -F, -U, -U:, -G, -G: not tested
+dnl
+dnl Note: -A, -A:, -M, -M:, -C, -C:, -D, -I, -F, -U, -U:, -G, -G: not tested
+dnl
 
 AT_CHECK([tcsh -f -c 'filetest -L link'], ,
 [file2
@@ -476,7 +590,7 @@ AT_CHECK([tcsh -f -c 'filetest -N file1 file2'], ,
 [1 2]
 )
 
-# S_ISVTX is masked out
+dnl S_ISVTX is masked out
 AT_CHECK([tcsh -f -c 'filetest -P file1'], ,
 [6777
 ])
@@ -498,10 +612,15 @@ AT_CHECK([tcsh -f -c 'filetest -N unknown'], ,
 [-1
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	foreach
+dnl
 
 AT_SETUP([foreach])
+AT_KEYWORDS([commands])
 
 AT_DATA([foreach.csh],
 [[foreach var (a b c)
@@ -514,14 +633,29 @@ b
 c
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	getspath
+dnl
 
 TCSH_UNTESTED([getspath])
+
+
+dnl
+dnl	getxvers
+dnl
+
 TCSH_UNTESTED([getxvers])
 
 
+dnl
+dnl	glob
+dnl
+
 AT_SETUP([glob])
+AT_KEYWORDS([commands])
 
 AT_CHECK([[tcsh -f -c 'glob a b c' | od -c] dnl
 	  [| sed 's/[ 	][ 	]*/ /g; s/ $//']], ,
@@ -529,10 +663,15 @@ AT_CHECK([[tcsh -f -c 'glob a b c' | od -c] dnl
 0000005
 ]])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	goto
+dnl
 
 AT_SETUP([goto])
+AT_KEYWORDS([commands])
 
 AT_DATA([goto.csh],
 [[goto first
@@ -554,13 +693,22 @@ Here
 OK
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	hashstat
+dnl
 
 TCSH_UNTESTED([hashstat])
 
 
+dnl
+dnl	history
+dnl
+
 AT_SETUP([history])
+AT_KEYWORDS([commands])
 
 AT_DATA([history.csh],
 [[: cmd 1
@@ -642,6 +790,7 @@ history -h 2
     28 TIME history
 > exit
 ])
+
 AT_CHECK([[sed 's/^#+[0123456789]*$/#+STAMP/' < hist1]], ,
 [#+STAMP
 : cmd 1
@@ -670,10 +819,12 @@ history -r 2
 #+STAMP
 history -S hist1
 ])
+
 AT_CHECK([[sed 's/^#+[0123456789]*$/#+STAMP/' < hist2]], ,
 [#+STAMP
 history -S hist2
 ])
+
 AT_CHECK([[sed 's/^#+[0123456789]*$/#+STAMP/' < hist3]], ,
 [#+STAMP
 set savehist= ( 1 )
@@ -687,10 +838,15 @@ set savehist= ( 5 merge )
 history -S hist3
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	hup
+dnl
 
 AT_SETUP([hup])
+AT_KEYWORDS([commands])
 
 AT_DATA([hup.csh],
 [[kill -s HUP $$
@@ -699,20 +855,25 @@ hup
 kill -s HUP $$
 echo fail
 ]])
-# onintr - is necessary to keep setintr == 0; should dohup () be checking
-# something else?
+dnl onintr - is necessary to keep setintr == 0; should dohup () be checking
+dnl something else?
 AT_CHECK([tcsh -f -c 'onintr -; nohup tcsh -f hup.csh' < /dev/null], ignore,
 [[OK
 ]],
 [[Hangup]]
 )
 
-# The prefix form requires job control and is not tested
+dnl The prefix form requires job control and is not tested
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	if
+dnl
 
 AT_SETUP([if])
+AT_KEYWORDS([commands])
 
 AT_DATA([if.csh],
 [[if (0) echo fail
@@ -759,6 +920,7 @@ if (0) then
 
 endif
 ]])
+
 AT_CHECK([tcsh -f if.csh], ,
 [OK
 OK
@@ -768,16 +930,31 @@ OK
 OK
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	inlib
+dnl
 
 TCSH_UNTESTED([inlib])
+
+
+dnl
+dnl	jobs
+dnl
+
 TCSH_UNTESTED([jobs])
 
 
-AT_SETUP([kill])
+dnl
+dnl	kill
+dnl
 
-# Nested to ensure consistent output
+AT_SETUP([kill])
+AT_KEYWORDS([commands])
+
+dnl Nested to ensure consistent output
 AT_DATA([kill.csh],
 [[kill $$
 kill -USR1 $$
@@ -787,15 +964,24 @@ AT_CHECK([tcsh -f -c 'tcsh -f -i -q < kill.csh'], ignore,
 [[User signal 1]]
 )
 
-# kill %job, kill -l untested untested
+dnl kill %job, kill -l untested untested
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	limit
+dnl
 
 TCSH_UNTESTED([limit])
 
 
+dnl
+dnl	log
+dnl
+
 AT_SETUP([log])
+AT_KEYWORDS([commands])
 
 AT_DATA([log.csh],
 [[set watch=(this_user_does_not_exist)
@@ -803,105 +989,72 @@ log
 ]])
 AT_CHECK([tcsh -f log.csh])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	login
+dnl
 
 TCSH_UNTESTED([login])
 
 
+dnl
+dnl	logout
+dnl
+
 AT_SETUP([logout])
+AT_KEYWORDS([commands])
 
 AT_CHECK([tcsh -f -c 'logout'], 1, [],
 [Not a login shell.
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-AT_SETUP([ls-F])
+dnl
+dnl	ls-F
+dnl
 
-mkdir dir
-touch file exec .hidden
-chmod a+x exec
-mkfifo pipe
-ln -s file lfile
-ln -s dir ldir
-ln -s nowhere lnowhere
-unset LS_COLORS
+dnl Tested in ls-F.at
 
-AT_CHECK([tcsh -f -c 'ls-F' | grep -vF testsuite.log], ,
-[dir/
-exec*
-file @&t@
-ldir@
-lfile@
-lnowhere@
-pipe|
-])
 
-AT_CHECK([tcsh -f -c 'set listlinks; ls-F' | grep -vF testsuite.log], ,
-[dir/
-exec*
-file @&t@
-ldir>
-lfile@
-lnowhere&
-pipe|
-])
-
-AT_CHECK([tcsh -f -c 'set listflags=x; ls-F' | grep -vF testsuite.log], ,
-[dir/
-exec*
-file @&t@
-ldir@
-lfile@
-lnowhere@
-pipe|
-])
-
-AT_CHECK([tcsh -f -c 'set listflags=A; ls-F' | grep -vF testsuite.log], ,
-[.hidden @&t@
-dir/
-exec*
-file @&t@
-ldir@
-lfile@
-lnowhere@
-pipe|
-])
-
-AT_CHECK([tcsh -f -c 'set listflags=xa; ls-F' | grep -vF testsuite.log], ,
-[../
-./
-.hidden @&t@
-dir/
-exec*
-file @&t@
-ldir@
-lfile@
-lnowhere@
-pipe|
-])
-
-AT_CLEANUP
-
+dnl
+dnl	migrate
+dnl
 
 TCSH_UNTESTED([migrate])
+
+
+dnl
+dnl	newgrp
+dnl
+
 TCSH_UNTESTED([newgrp])
 
 
-AT_SETUP([nice])
+dnl
+dnl	nice
+dnl
 
-# Nothing really tested
+AT_SETUP([nice])
+AT_KEYWORDS([commands])
+
+dnl Nothing really tested
 AT_CHECK([tcsh -f -c 'nice set var=1; echo $?var'], ,
 [0
 ])
 
+AT_CLEANUP()
 
-AT_CLEANUP
 
+dnl
+dnl	nohup
+dnl
 
 AT_SETUP([nohup])
+AT_KEYWORDS([commands])
 
 AT_DATA([nohup.csh],
 [[
@@ -910,18 +1063,29 @@ nohup
 kill -s HUP $$
 echo OK
 ]])
-# See commends in [hup]
+
+dnl See comments in "hup" test group
+dnl
 AT_CHECK([tcsh -f -c 'onintr -; nohup tcsh -f nohup.csh' < /dev/null], ,
 [OK
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	notify
+dnl
 
 TCSH_UNTESTED([notify])
 
 
+dnl
+dnl	onintr
+dnl
+
 AT_SETUP([onintr])
+AT_KEYWORDS([commands])
 
 AT_DATA([onintr.csh],
 [[onintr label
@@ -940,10 +1104,15 @@ AT_CHECK([tcsh -f onintr.csh], ,
 OK
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	popd
+dnl
 
 AT_SETUP([popd])
+AT_KEYWORDS([commands])
 
 AT_DATA([popd.csh],
 [[set current=`/bin/pwd`
@@ -985,10 +1154,15 @@ CWD @&t@
 Usage: popd [-plvn] [-|+<n>].
 ]])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	printenv
+dnl
 
 AT_SETUP([printenv])
+AT_KEYWORDS([commands])
 
 AT_CHECK([env_var=value tcsh -f -c 'printenv env_var'], ,
 [value
@@ -998,10 +1172,15 @@ AT_CHECK([env_var=value tcsh -f -c 'printenv' | grep env_var], ,
 [env_var=value
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	pushd
+dnl
 
 AT_SETUP([pushd])
+AT_KEYWORDS([commands])
 
 AT_DATA([pushd.csh],
 [[set home=`/bin/pwd`
@@ -1065,17 +1244,27 @@ CWD / @&t@
 Usage: pushd [-plvn] [-|<dir>|+<n>].
 ]])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	rehash
+dnl
 
 AT_SETUP([rehash])
+AT_KEYWORDS([commands])
 
 AT_CHECK([tcsh -f -c 'rehash'])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	repeat
+dnl
 
 AT_SETUP([repeat])
+AT_KEYWORDS([commands])
 
 AT_CHECK([tcsh -f -c 'repeat 3 echo OK'], ,
 [OK
@@ -1085,14 +1274,30 @@ OK
 
 AT_CHECK([tcsh -f -c 'repeat 0 echo > file' && test -f file -a ! -s file])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	rootnode
+dnl
 
 TCSH_UNTESTED([rootnode])
-TCSH_UNTESTED([sched]) # We don't want to wait for minutes, so ...
 
+
+dnl
+dnl	sched
+dnl
+
+dnl We don't want to wait for minutes, so this is TCSH_UNTESTED
+TCSH_UNTESTED([sched])
+
+
+dnl
+dnl	set
+dnl
 
 AT_SETUP([set])
+AT_KEYWORDS([commands])
 
 touch file1 file2
 
@@ -1129,10 +1334,15 @@ val2a val2x
 [set: $my_var4 is read-only.
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	setenv
+dnl
 
 AT_SETUP([setenv])
+AT_KEYWORDS([commands])
 
 AT_CHECK([env_var=value tcsh -f -c 'setenv' | grep env_var], ,
 [env_var=value
@@ -1150,17 +1360,50 @@ AT_CHECK([tcsh -f -c 'setenv env_var value; ./output.sh'], ,
 [value
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	setpath
+dnl
 
 TCSH_UNTESTED([setpath])
+
+
+dnl
+dnl	setspath
+dnl
+
 TCSH_UNTESTED([setspath])
+
+
+dnl
+dnl	settc
+dnl
+
 TCSH_UNTESTED([settc])
+
+
+dnl
+dnl	setty
+dnl
+
 TCSH_UNTESTED([setty])
+
+
+dnl
+dnl	setxvers
+dnl
+
 TCSH_UNTESTED([setxvers])
 
 
+dnl
+dnl	shift
+dnl
+
 AT_SETUP([shift])
+AT_KEYWORDS([commands])
 
 AT_DATA([shift.csh],
 [[set var=(1 2)
@@ -1197,10 +1440,15 @@ shift: No more words.
 4]
 )
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	source
+dnl
 
 AT_SETUP([source])
+AT_KEYWORDS([commands])
 
 AT_DATA([script.csh],
 [[set var=$1
@@ -1236,14 +1484,29 @@ AT_DATA([unreadable.csh],
 chmod 000 unreadable.csh
 AT_CHECK([tcsh -f -c 'source unreadable.csh'], 1, [], [ignore])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	stop
+dnl
 
 TCSH_UNTESTED([stop])
+
+
+dnl
+dnl	suspend
+dnl
+
 TCSH_UNTESTED([suspend])
 
 
+dnl
+dnl	switch
+dnl
+
 AT_SETUP([switch])
+AT_KEYWORDS([commands])
 
 touch file1
 AT_DATA([switch.csh],
@@ -1296,15 +1559,36 @@ OK2
 OK3
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	telltc
+dnl
 
 TCSH_UNTESTED([telltc])
+
+
+dnl
+dnl	termname
+dnl
+
 TCSH_UNTESTED([termname])
+
+
+dnl
+dnl	time
+dnl
+
 TCSH_UNTESTED([time])
 
 
+dnl
+dnl	umask
+dnl
+
 AT_SETUP([umask])
+AT_KEYWORDS([commands])
 
 AT_DATA([umask.csh],
 [[umask 000
@@ -1323,10 +1607,15 @@ AT_CHECK([tcsh -f umask.csh], ,
 2
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	unalias
+dnl
 
 AT_SETUP([unalias])
+AT_KEYWORDS([commands])
 
 AT_DATA([unalias.csh],
 [[unalias foo
@@ -1336,10 +1625,15 @@ alias
 ]])
 AT_CHECK([tcsh -f unalias.csh])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	uncomplete
+dnl
 
 AT_SETUP([uncomplete])
+AT_KEYWORDS([commands])
 
 AT_DATA([uncomplete.csh],
 [[uncomplete foo
@@ -1349,21 +1643,41 @@ complete
 ]])
 AT_CHECK([tcsh -f uncomplete.csh])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	unhash
+dnl
 
 AT_SETUP([unhash])
+AT_KEYWORDS([commands])
 
 AT_CHECK([tcsh -f -c 'unhash'])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	universe
+dnl
 
 TCSH_UNTESTED([universe])
+
+
+dnl
+dnl	unlimit
+dnl
+
 TCSH_UNTESTED([unlimit])
 
 
+dnl
+dnl	unset
+dnl
+
 AT_SETUP([unset])
+AT_KEYWORDS([commands])
 
 AT_DATA([unset.csh],
 [[unset foo
@@ -1375,10 +1689,15 @@ AT_CHECK([tcsh -f unset.csh], ,
 [0
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	unsetenv
+dnl
 
 AT_SETUP([unsetenv])
+AT_KEYWORDS([commands])
 
 AT_DATA([unsetenv.csh],
 [[unsetenv env_foo
@@ -1389,25 +1708,49 @@ AT_CHECK([env_bar=value tcsh -f unsetenv.csh], ,
 [
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	ver
+dnl
 
 TCSH_UNTESTED([ver])
 
 
-AT_SETUP([wait])
+dnl
+dnl	wait
+dnl
 
-# Not really...
+AT_SETUP([wait])
+AT_KEYWORDS([commands])
+
+dnl Not really...
 AT_CHECK([tcsh -f -c 'wait'])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	warp
+dnl
 
 TCSH_UNTESTED([warp])
+
+
+dnl
+dnl	watchlog
+dnl
+
 TCSH_UNTESTED([watchlog])
 
 
+dnl
+dnl	where
+dnl
+
 AT_SETUP([where])
+AT_KEYWORDS([commands])
 
 touch ls-F
 chmod a+x ls-F
@@ -1423,10 +1766,15 @@ ls-F is a shell built-in
 CWD/ls-F
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	which
+dnl
 
 AT_SETUP([which])
+AT_KEYWORDS([commands])
 
 touch my_command
 chmod a+x my_command
@@ -1448,10 +1796,15 @@ this_does_not_exist: Command not found.
 echo: 	 aliased to echo_alias
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	while
+dnl
 
 AT_SETUP([while])
+AT_KEYWORDS([commands])
 
 AT_DATA([while.csh],
 [[set i=0
@@ -1468,10 +1821,15 @@ AT_CHECK([tcsh -f while.csh], ,
 OK
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	jobs output
+dnl
 
 AT_SETUP([jobs output])
+AT_KEYWORDS([commands])
 
 AT_DATA([jobs_stdout.csh],
 [[
@@ -1487,10 +1845,15 @@ endif
 ]])
 AT_CHECK([tcsh -f jobs_stdout.csh], 0, [ignore])
 
-AT_CLEANUP
+AT_CLEANUP()
+
+
+dnl
+dnl	time output
+dnl
 
 AT_SETUP([time output])
-
+AT_KEYWORDS([commands])
 
 AT_DATA([time_output.csh],
 [[
@@ -1506,4 +1869,4 @@ endif
 ]])
 AT_CHECK([tcsh -f time_output.csh], 0, [ignore])
 
-AT_CLEANUP
+AT_CLEANUP()

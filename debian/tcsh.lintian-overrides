@@ -1,0 +1,13 @@
+# False positive: 'uncomplete' is a command name
+tcsh: typo-in-manual-page uncomplete incomplete [usr/share/man/man1/tcsh.1.gz:5228]
+tcsh: typo-in-manual-page uncomplete incomplete [usr/share/man/man1/tcsh.1.gz:6907]
+tcsh: typo-in-manual-page uncomplete incomplete [usr/share/man/man1/tcsh.1.gz:6911]
+tcsh: typo-in-manual-page uncomplete incomplete [usr/share/man/man1/tcsh.1.gz:6914]
+tcsh: typo-in-manual-page uncomplete incomplete [usr/share/man/man1/tcsh.1.gz:10104]
+tcsh: spelling-error-in-binary uncomplete incomplete [usr/bin/tcsh]
+
+# False positive: not a typo
+tcsh: typo-in-manual-page "allow to" "allow one to" [usr/share/man/man1/tcsh.1.gz:6670]
+
+# C locale folder is needed
+tcsh: unknown-locale-code C [usr/share/locale/C/]

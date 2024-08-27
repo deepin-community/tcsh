@@ -1,53 +1,75 @@
-# Special shell variables
+AT_BANNER([Special shell variables])
 
-# The space after $ is to avoid expanding the variables in testsuite output,
-# to work-around a bug in autotest
+dnl
+dnl The space after $ is to avoid expanding the variables in testsuite output,
+dnl and to allow the variable names to be used as a testsuite keyword
+dnl (e.g., "-k time").
+dnl If the space is not desired, use "$[]foo" instead of "$ foo".
+dnl
 
-# Not testing any functionality
-m4_define([VAR_UNSET],
-[AT_SETUP([$ $1])
+dnl
+dnl TCSH_VAR_UNSET(VARIABLE)
+dnl
+dnl	Setup test group "$ NAME" to ensure that the NAME is unset,
+dnl	and not testing any other specific functionality.
+dnl
+
+m4_define([TCSH_VAR_UNSET], [dnl
+AT_SETUP([$ $1])
+AT_KEYWORDS([variables unset])
 AT_CHECK([tcsh -f -c 'echo $?$1'], ,
 [0
 ])
-AT_CLEANUP
-])
-m4_define([ENV_SET],
-[AT_SETUP([$ $1])
-AT_CHECK([tcsh -f -c 'printenv $1'], 0, [ignore])
-AT_CLEANUP
-])
-m4_define([ENV_UNSET],
-[AT_SETUP([$ $1])
-AT_CHECK([tcsh -f -c 'printenv $1'], 1,
-[0
-])
-AT_CLEANUP
+AT_CLEANUP()
 ])
 
+
+dnl
+dnl	$ addsuffix
+dnl
 
 AT_SETUP([$ addsuffix])
+AT_KEYWORDS([variables])
 
 AT_CHECK([tcsh -f -c 'echo $?addsuffix'], ,
 [1
 ])
-# Nothing more
+dnl Nothing more
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([afsuser])
-VAR_UNSET([ampm])
+dnl
+dnl	$ afsuser
+dnl
 
+TCSH_VAR_UNSET([afsuser])
+
+
+dnl
+dnl	$ ampm
+dnl
+
+TCSH_VAR_UNSET([ampm])
+
+
+dnl
+dnl	$ anyerror
+dnl
 
 AT_SETUP([$ anyerror])
+AT_KEYWORDS([variables])
+
+echo 'exit 1' > myfalse
+chmod +x myfalse
 
 AT_DATA([exit_status.csh],
 [[echo $?anyerror $anyerror
-false | true ; echo $?
+./myfalse | true ; echo $?
 unset anyerror ; echo $?anyerror
-false | true ; echo $?
+./myfalse | true ; echo $?
 set anyerror
-false | true ; echo $?
+./myfalse | true ; echo $?
 ]])
 
 AT_CHECK([tcsh -f exit_status.csh],,
@@ -58,26 +80,57 @@ AT_CHECK([tcsh -f exit_status.csh],,
 1
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ argv
+dnl
 
 AT_SETUP([$ argv])
+AT_KEYWORDS([variables])
 
 AT_CHECK([tcsh -f -c 'echo $argv; echo $2' foo bar baz], ,
 [foo bar baz
 bar
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([autocorrect])
-VAR_UNSET([autoexpand])
-VAR_UNSET([autolist])
+dnl
+dnl	$ autocorret
+dnl
+
+TCSH_VAR_UNSET([autocorrect])
+
+
+dnl
+dnl	$ autoexpand
+dnl
+
+TCSH_VAR_UNSET([autoexpand])
+
+dnl
+dnl	$ autolist
+dnl
+
+TCSH_VAR_UNSET([autolist])
+
+
+dnl
+dnl	$ autologout
+dnl
+
 TCSH_UNTESTED([$ autologout])
 
 
+dnl
+dnl	$ backslash_quote
+dnl
+
 AT_SETUP([$ backslash_quote])
+AT_KEYWORDS([variables])
 
 AT_DATA([backslash.csh],
 [[echo $?backslash_quote
@@ -112,13 +165,22 @@ foo\bar
 foo\bar
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([catalog])
+dnl
+dnl	$ catalog
+dnl
 
+TCSH_VAR_UNSET([catalog])
+
+
+dnl
+dnl	$ cdpath
+dnl
 
 AT_SETUP([$ cdpath])
+AT_KEYWORDS([variables])
 
 AT_DATA([cdpath.csh],
 [[echo $?cdpath
@@ -134,14 +196,29 @@ AT_CHECK([tcsh -f cdpath.csh], ,
 ~/tcsh_test_dir @&t@
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([color])
-VAR_UNSET([colorcat])
+dnl
+dnl	$ color
+dnl
 
+TCSH_VAR_UNSET([color])
+
+
+dnl
+dnl	$ colorcat
+dnl
+
+TCSH_VAR_UNSET([colorcat])
+
+
+dnl
+dnl	$ command
+dnl
 
 AT_SETUP([$ command])
+AT_KEYWORDS([variables])
 
 AT_CHECK([tcsh -f -c 'echo $command'], ,
 [echo $command
@@ -154,16 +231,43 @@ AT_CHECK([tcsh -f command.csh], ,
 [0
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([complete])
-VAR_UNSET([continue])
-VAR_UNSET([continue_args])
-VAR_UNSET([correct])
+dnl
+dnl	$ complete
+dnl
 
+TCSH_VAR_UNSET([complete])
+
+
+dnl
+dnl	$ continue
+dnl
+
+TCSH_VAR_UNSET([continue])
+
+
+dnl
+dnl	$ continue_args
+dnl
+
+TCSH_VAR_UNSET([continue_args])
+
+
+dnl
+dnl	$ correct
+dnl
+
+TCSH_VAR_UNSET([correct])
+
+
+dnl
+dnl	$ csubstnonl
+dnl
 
 AT_SETUP([$ csubstnonl])
+AT_KEYWORDS([variables])
 
 touch test_file
 
@@ -208,10 +312,15 @@ Invalid null command.
 4
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ cwd
+dnl
 
 AT_SETUP([$ cwd])
+AT_KEYWORDS([variables])
 
 AT_DATA([cwd.csh],
 [[echo $?cwd
@@ -241,14 +350,30 @@ CWD
 foo
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([dextract]) # Behavior tested with pushd
-VAR_UNSET([dirsfile])
+dnl
+dnl	$ dextract
+dnl
 
+dnl Functionality tested with "pushd"
+TCSH_VAR_UNSET([dextract])
+
+
+dnl
+dnl	$ dirsfile
+dnl
+
+TCSH_VAR_UNSET([dirsfile])
+
+
+dnl
+dnl	$ dirstack
+dnl
 
 AT_SETUP([$ dirstack])
+AT_KEYWORDS([variables])
 
 AT_DATA([dirstack.csh],
 [[echo $dirstack
@@ -270,14 +395,30 @@ AT_CHECK([tcsh -f dirstack.csh | sed "s,$PWD,CWD,g"], ,
 /dev CWD
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ dspmbyte
+dnl
 
 TCSH_UNTESTED([$ dspmbyte])
-VAR_UNSET([dunique]) # Behavior tested with pushd
 
+
+dnl
+dnl	$ dunique
+dnl
+
+dnl Functionality tested with "pushd"
+TCSH_VAR_UNSET([dunique])
+
+
+dnl
+dnl	$ echo
+dnl
 
 AT_SETUP([$ echo])
+AT_KEYWORDS([variables])
 
 touch some_file;
 
@@ -306,10 +447,15 @@ some_file
 echo some_*
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ echo_style
+dnl
 
 AT_SETUP([$ echo_style])
+AT_KEYWORDS([variables])
 
 AT_DATA([echo_style.csh],
 [[echo $?echo_style
@@ -336,25 +482,85 @@ foob	r
 b\tr
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ echo_hex
+dnl
+
+AT_SETUP([$ echo_hex])
+AT_KEYWORDS([variables])
+
+AT_DATA([echo_hex.csh],
+[[set echo_style=sysv
+echo '\x'
+echo '\xg'
+echo '\x61'
+echo '\x61g'
+echo '\x{61}'
+echo '\x{61}g'
+echo '\x{61g'
+echo '\u'
+echo '\ug'
+echo '\u61'
+echo '\u61g'
+]])
+AT_CHECK([tcsh -f echo_hex.csh], ,
+[\x
+\xg
+a
+ag
+a
+ag
+\x{61g
+\u
+\ug
+a
+ag
+])
+
+AT_CLEANUP()
+
+
+dnl
+dnl	$ edit
+dnl
+dnl Note that editing is disabled if stdin is not a terminal.
+dnl
 
 AT_SETUP([$ edit])
+AT_KEYWORDS([variables])
 
-AT_CHECK([if [ ! -t 0 ]; then exit 77; fi],, [Skipping $edit tests])
-
-AT_CHECK([TERM=something tcsh -f -c 'echo $?edit'], ,
+AT_CHECK([TERM=something tcsh -f -c 'echo $?edit'], , [stdout])
+AS_IF([test -t 0], [dnl
+AT_CHECK([cat stdout], ,
 [1
+])
+], [dnl
+AT_CHECK([cat stdout], ,
+[0
+])
+])
+
+dnl Explicitly disable stdin as terminal
+AT_CHECK([TERM=something tcsh -f -c 'echo $?edit' < /dev/null], ,
+[0
 ])
 
 AT_CHECK([TERM=dumb tcsh -f -c 'echo $?edit'], ,
 [0
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ ellipsis0
+dnl
 
 AT_SETUP([$ ellipsis])
+AT_KEYWORDS([variables])
 
 AT_DATA([ellipsis0.csh],
 [[echo $?ellipsis
@@ -379,23 +585,43 @@ AT_CHECK([tcsh -f -i -q < ellipsis0.csh], ,
 [> ~...b exit
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([fignore])
-VAR_UNSET([filec])
+dnl
+dnl	$ fignore
+dnl
 
+TCSH_VAR_UNSET([fignore])
+
+
+dnl
+dnl	$ filec
+dnl
+
+TCSH_VAR_UNSET([filec])
+
+
+dnl
+dnl	$ gid
+dnl
 
 AT_SETUP([$ gid])
+AT_KEYWORDS([variables])
 
 AT_CHECK([(tcsh -f -c 'echo $gid'; id -gr) | uniq | wc -l | tr -d ' \t'], ,
 [1
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ group
+dnl
 
 AT_SETUP([$ group])
+AT_KEYWORDS([variables])
 
 AT_DATA([group.csh],
 [[echo $?group
@@ -410,10 +636,15 @@ foo
 bar
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ histchars
+dnl
 
 AT_SETUP([$ histchars])
+AT_KEYWORDS([variables])
 
 AT_DATA([histchars.csh],
 [[echo $?histchars
@@ -433,10 +664,15 @@ Ok
 echo Ok
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ histdup
+dnl
 
 AT_SETUP([$ histdup])
+AT_KEYWORDS([variables history])
 
 AT_DATA([histdup.csh],
 [[echo $?histdup
@@ -487,13 +723,23 @@ AT_CHECK([[tcsh -f -q -i < histdup.csh] dnl
 > exit
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([histfile])
+dnl
+dnl	$ histfile
+dnl
 
+dnl Behavior tested in history.at
+TCSH_VAR_UNSET([histfile])
+
+
+dnl
+dnl	$ histlit
+dnl
 
 AT_SETUP([$ histlit])
+AT_KEYWORDS([variables history])
 
 AT_DATA([histlit.csh],
 [[echo $?histlit
@@ -537,6 +783,7 @@ history
 #+STAMP
 history -S hist1
 ])
+
 AT_CHECK([[sed 's/^#+[0123456789]*$/#+STAMP/' < hist2]], ,
 [#+STAMP
 echo $?histlit
@@ -556,10 +803,15 @@ history
 history -S hist2
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ history
+dnl
 
 AT_SETUP([$ history])
+AT_KEYWORDS([variables])
 
 AT_DATA([history.csh],
 [[echo $#history $history
@@ -575,10 +827,15 @@ CWD,~,     6,     6,     6,%,0,value,>,history
 > exit
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ home
+dnl
 
 AT_SETUP([$ home])
+AT_KEYWORDS([variables])
 
 AT_DATA([home.csh],
 [[echo $?home
@@ -588,7 +845,18 @@ printenv HOME
 setenv HOME /bar
 echo $home
 ]])
-AT_CHECK([tcsh -f home.csh], ,
+AT_CHECK([
+case "$(uname -s)" in
+Darwin)
+    HOME=$(dscl . read "/Users/$USER" NFSHomeDirectory | awk '{ print $NF }')
+    ;;
+*)
+    HOME=$(getent passwd $(id -un) | awk -F: '{ print $(NF - 1) }')
+    ;;
+esac;
+export HOME;
+tcsh -f home.csh
+], ,
 [1
 1
 /foo
@@ -599,13 +867,22 @@ AT_CHECK([(unset HOME; tcsh -f -c 'echo $?home; printenv HOME')], 1,
 [0
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([ignoreeof])
+dnl
+dnl	$ ignoreeof
+dnl
 
+TCSH_VAR_UNSET([ignoreeof])
+
+
+dnl
+dnl	$ implicitcd
+dnl
 
 AT_SETUP([$ implicitcd])
+AT_KEYWORDS([variables])
 
 AT_DATA([implicitcd.csh],
 [[echo $?implicitcd
@@ -640,26 +917,46 @@ cd ~/subdir
 > exit
 ], [experr])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([inputmode])
-VAR_UNSET([killdup])
+dnl
+dnl	$ inputmode
+dnl
 
+TCSH_VAR_UNSET([inputmode])
+
+
+dnl
+dnl	$ killdup
+dnl
+
+TCSH_VAR_UNSET([killdup])
+
+
+dnl
+dnl	$ killring
+dnl
 
 AT_SETUP([$ killring])
+AT_KEYWORDS([variables])
 
 AT_CHECK([tcsh -f -c 'echo $killring'], ,
 [30
 ])
-# Nothing more
+dnl Nothing more
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ listflags
+dnl
 
 AT_SETUP([$ listflags])
+AT_KEYWORDS([variables ls-F])
 
-# First word checked with ls-F
+dnl First word checked with ls-F
 AT_DATA([listflags.csh],
 [[echo $?listflags
 set listflags=(-xA $cwd/args.sh)
@@ -674,18 +971,59 @@ AT_CHECK([tcsh -f listflags.csh], ,
 -xFA -something .
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([listjobs])
-VAR_UNSET([listlinks]) # Functionality tested with ls-F
-VAR_UNSET([listmax])
-VAR_UNSET([listmaxrows])
-VAR_UNSET([loginsh]) # Can't test the other case
-VAR_UNSET([logout])
+dnl
+dnl	$ listjobs
+dnl
 
+TCSH_VAR_UNSET([listjobs])
+
+
+dnl
+dnl	$ listlinks
+dnl
+
+dnl Functionality tested with "ls-F"
+TCSH_VAR_UNSET([listlinks])
+
+
+dnl
+dnl	$ listmax
+dnl
+
+TCSH_VAR_UNSET([listmax])
+
+
+dnl
+dnl	$ listmaxrows
+dnl
+
+TCSH_VAR_UNSET([listmaxrows])
+
+
+dnl
+dnl	$ loginsh
+dnl
+
+dnl Can't test the other case
+TCSH_VAR_UNSET([loginsh])
+
+
+dnl
+dnl	$ logout
+dnl
+
+TCSH_VAR_UNSET([logout])
+
+
+dnl
+dnl	$ mail
+dnl
 
 AT_SETUP([$ mail])
+AT_KEYWORDS([variables])
 
 AT_DATA([mail.csh],
 [[echo $?mail
@@ -701,31 +1039,109 @@ AT_CHECK([tcsh -f mail.csh], ,
 [0
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ cdtohome
+dnl
 
 AT_SETUP([$ cdtohome])
-AT_CHECK([tcsh -f -c 'cd'], 0)
-AT_CLEANUP
-AT_SETUP([$ noimplicithome])
+AT_KEYWORDS([variables])
+
+AT_CHECK([
+case "$(uname -s)" in
+Darwin)
+    HOME=$(dscl . read "/Users/$USER" NFSHomeDirectory | awk '{ print $NF }')
+    ;;
+*)
+    HOME=$(getent passwd $(id -un) | awk -F: '{ print $(NF - 1) }')
+    ;;
+esac;
+export HOME;
+tcsh -f -c 'cd'
+], 0)
+AT_CLEANUP()
+
+
+dnl
+dnl	$ cdtohome unset
+dnl
+
+AT_SETUP([$ cdtohome unset])
+AT_KEYWORDS([variables])
+
 AT_CHECK([tcsh -f -c 'unset cdtohome; cd'], 1, , [cd: Too few arguments.
 ])
-AT_CLEANUP
+
+AT_CLEANUP()
 
 
-VAR_UNSET([matchbeep])
-VAR_UNSET([nobeep])
-VAR_UNSET([noclobber]) # Functionality tested with "Command execution"
-VAR_UNSET([noding])
-# Functionality tested with "Filename substitution" and
-# "Directory stack substitution"
-VAR_UNSET([noglob])
-VAR_UNSET([nostat])
-VAR_UNSET([notify])
+dnl
+dnl	$ matchbeep
+dnl
+
+TCSH_VAR_UNSET([matchbeep])
+
+
+dnl
+dnl	$ nobeep
+dnl
+
+TCSH_VAR_UNSET([nobeep])
+
+
+dnl
+dnl	$ noclobber
+dnl
+
+dnl Functionality tested with "Command execution"
+TCSH_VAR_UNSET([noclobber])
+
+
+dnl
+dnl	$ noding
+dnl
+
+TCSH_VAR_UNSET([noding])
+
+
+dnl
+dnl	$ noglob
+dnl
+
+dnl Functionality tested with "Filename substitution" and
+dnl "Directory stack substitution"
+TCSH_VAR_UNSET([noglob])
+
+
+dnl
+dnl	$ nostat
+dnl
+
+TCSH_VAR_UNSET([nostat])
+
+
+dnl
+dnl	$ notify
+dnl
+
+TCSH_VAR_UNSET([notify])
+
+
+dnl
+dnl	$ oid
+dnl
+
 TCSH_UNTESTED([$ oid])
 
 
+dnl
+dnl	$ owd
+dnl
+
 AT_SETUP([$ owd])
+AT_KEYWORDS([variables])
 
 AT_DATA([owd.csh],
 [[echo $owd
@@ -745,10 +1161,15 @@ CWD
 /bin
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ path
+dnl
 
 AT_SETUP([$ path])
+AT_KEYWORDS([variables])
 
 mkdir subdir
 AT_DATA([script.sh],
@@ -776,15 +1197,23 @@ subdir:.
 . foo . bar .
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ printexitvalue
+dnl
 
 AT_SETUP([$ printexitvalue])
+AT_KEYWORDS([variables])
+
+echo 'exit 1' > myfalse
+chmod +x myfalse
 
 AT_DATA([printexitvalue.csh],
 [[echo $?printexitvalue
 set printexitvalue
-false
+./myfalse
 (exit 3 >/dev/null)
 :
 ]])
@@ -794,10 +1223,15 @@ Exit 1
 Exit 3
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ prompt
+dnl
 
 AT_SETUP([$ prompt])
+AT_KEYWORDS([variables])
 
 AT_DATA([prompt.csh],
 [[echo "$prompt"
@@ -813,27 +1247,43 @@ AT_CHECK([tcsh -f -i -q < prompt.csh | sed "s,$PWD,CWD,"], ,
 CWD/a/b,~/a/b,b,b,~/a/b,~/a/b,~/<1>b,~/<1>b,b,8,8,8,%,0,value,>,50 exit
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ prompt2
+dnl
 
 AT_SETUP([$ prompt2])
+AT_KEYWORDS([variables])
 
 AT_CHECK([echo 'echo "$prompt2"' | tcsh -f], ,
 [%R? @&t@
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ prompt3
+dnl
 
 AT_SETUP([$ prompt3])
+AT_KEYWORDS([variables])
 
 AT_CHECK([echo 'echo "$prompt3"' | tcsh -f], ,
 [CORRECT>%R (y|n|e|a)? @&t@
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
+
+
+dnl
+dnl	$ promptchars
+dnl
 
 AT_SETUP([$ promptchars])
+AT_KEYWORDS([variables])
 
 AT_DATA([promptchars.csh],
 [[echo $?promptchars
@@ -844,17 +1294,51 @@ AT_CHECK([tcsh -f  -i -q < promptchars.csh], ,
 _ exit
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([pushdtohome]) # Functionality tested with pushd
-VAR_UNSET([pushdsilent]) # Functionality tested with pushd
-VAR_UNSET([recexact])
-VAR_UNSET([recognize_only_executablers])
-VAR_UNSET([rmstar])
+dnl
+dnl	$ pushdtohome
+dnl
 
+dnl Functionality tested with "pushd"
+TCSH_VAR_UNSET([pushdtohome])
+
+dnl
+dnl	$ pushdsilent
+dnl
+
+dnl Functionality tested with "pushd"
+TCSH_VAR_UNSET([pushdsilent])
+
+
+dnl
+dnl	$ recexact
+dnl
+
+TCSH_VAR_UNSET([recexact])
+
+
+dnl
+dnl	$ recognize_only_executables
+dnl
+
+TCSH_VAR_UNSET([recognize_only_executables])
+
+
+dnl
+dnl	$ rmstar
+dnl
+
+TCSH_VAR_UNSET([rmstar])
+
+
+dnl
+dnl	$ rprompt
+dnl
 
 AT_SETUP([$ rprompt])
+AT_KEYWORDS([variables])
 
 AT_DATA([rprompt.csh],
 [[echo $?rprompt
@@ -870,15 +1354,37 @@ AT_CHECK([tcsh -f -i -q < rprompt.csh | sed "s,$PWD,CWD,"], ,
 > CWD/a/b,~/a/b,b,b,~/a/b,~/a/b,~/<1>b,~/<1>b,b,8,8,8,%,0,value,>,50 exit
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([savedirs])
-VAR_UNSET([savehist])
-VAR_UNSET([sched])
+dnl
+dnl	$ savedirs
+dnl
 
+TCSH_VAR_UNSET([savedirs])
+
+
+dnl
+dnl	$ savehist
+dnl
+
+dnl Functionality tested in "History performance"
+TCSH_VAR_UNSET([savehist])
+
+
+dnl
+dnl	$ sched
+dnl
+
+TCSH_VAR_UNSET([sched])
+
+
+dnl
+dnl	$ shell
+dnl
 
 AT_SETUP([$ shell])
+AT_KEYWORDS([variables])
 
 AT_CHECK([tcsh -f -c 'echo $?shell'], ,
 [1
@@ -888,10 +1394,15 @@ AT_CHECK([SHELL=foo/tcsh tcsh -f -c 'echo $shell'], ,
 [foo/tcsh
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ shlvl
+dnl
 
 AT_SETUP([$ shlvl])
+AT_KEYWORDS([variables])
 
 AT_DATA([shlvl.csh],
 [[echo $shlvl
@@ -904,7 +1415,7 @@ tcsh -f -c 'tcsh -f -c "printenv SHLVL"'
 tcsh -f -c 'exec tcsh -f -c "printenv SHLVL"'
 tcsh -f -c '(exec tcsh -f -c "printenv SHLVL")'
 ]])
-AT_CHECK([SHLVL=5 tcsh -f shlvl.csh], ,
+AT_CHECK([env SHLVL=5 tcsh -f shlvl.csh], ,
 [6
 8
 2
@@ -914,10 +1425,15 @@ AT_CHECK([SHLVL=5 tcsh -f shlvl.csh], ,
 4
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ status
+dnl
 
 AT_SETUP([$ status])
+AT_KEYWORDS([variables])
 
 AT_DATA([status.csh],
 [[echo $status
@@ -926,17 +1442,25 @@ if ( $status > 128 ) echo OK
 true
 echo $status
 ]])
-AT_CHECK([tcsh -f status.csh 2>&1 | sed 's/Abort (core dumped)/Abort/'], ,
+AT_CHECK([tcsh -f status.csh 2>&1 | sed '
+  /^qemu: uncaught target signal 6 / d
+  s/Abort *(core dumped)/Abort/
+'], ,
 [0
 Abort
 OK
 0
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ symlinks
+dnl
 
 AT_SETUP([$ symlinks])
+AT_KEYWORDS([variables])
 
 AT_DATA([symlinks.csh],
 [[echo $?symlinks
@@ -964,19 +1488,29 @@ CWD
 1
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ tcsh
+dnl
 
 AT_SETUP([$ tcsh])
+AT_KEYWORDS([variables])
 
 AT_CHECK([tcsh -f -c 'echo $?tcsh'], ,
 [1
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ term
+dnl
 
 AT_SETUP([$ term])
+AT_KEYWORDS([variables])
 
 AT_DATA([term.csh],
 [[echo $term
@@ -995,32 +1529,57 @@ AT_CHECK([(unset TERM; tcsh -f -c 'echo $?term; printenv TERM')], 1,
 [0
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([time])
-VAR_UNSET([tperiod])
+dnl
+dnl	$ time
+dnl
 
+TCSH_VAR_UNSET([time])
+
+
+dnl
+dnl	$ tperiod
+dnl
+
+TCSH_VAR_UNSET([tperiod])
+
+
+dnl
+dnl	$ tty
+dnl
 
 AT_SETUP([$ tty])
+AT_KEYWORDS([variables])
 
 AT_CHECK([tcsh -f -c 'echo ">$tty<"' < /dev/null], ,
 [><
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ uid
+dnl
 
 AT_SETUP([$ uid])
+AT_KEYWORDS([variables])
 
 AT_CHECK([(tcsh -f -c 'echo $uid'; id -ru) | uniq | wc -l | tr -d ' \t'], ,
 [1
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ user
+dnl
 
 AT_SETUP([$ user])
+AT_KEYWORDS([variables])
 
 AT_DATA([user.csh],
 [[echo $?user
@@ -1046,10 +1605,15 @@ AT_CHECK([(unset LOGNAME; USER=foo tcsh -f -c 'echo $user; printenv LOGNAME')],
 foo
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ verbose
+dnl
 
 AT_SETUP([$ verbose])
+AT_KEYWORDS([variables])
 
 AT_CHECK([tcsh -f -v -c 'echo $verbose'], , [
 ],
@@ -1072,23 +1636,50 @@ AT_CHECK([tcsh -f -i -q < verbose.csh], ,
 echo $verbose
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
+
+dnl
+dnl	$ version
+dnl
 
 AT_SETUP([$ version])
+AT_KEYWORDS([variables])
 
 AT_CHECK([tcsh -f -c 'echo $?version'], ,
 [1
 ])
 
-AT_CLEANUP
+AT_CLEANUP()
 
 
-VAR_UNSET([visiblebell])
-VAR_UNSET([watch])
-VAR_UNSET([who])
-VAR_UNSET([wordchars])
+dnl
+dnl	$ visiblebell
+dnl
+
+TCSH_VAR_UNSET([visiblebell])
 
 
-# Nothing to test for environment variables, except for the synchronization
-# above
+dnl
+dnl	$ watch
+dnl
+
+TCSH_VAR_UNSET([watch])
+
+
+dnl
+dnl	$ who
+dnl
+
+TCSH_VAR_UNSET([who])
+
+
+dnl
+dnl	$ wordchars
+dnl
+
+TCSH_VAR_UNSET([wordchars])
+
+
+dnl Nothing to test for environment variables,
+dnl except for the synchronization above.
